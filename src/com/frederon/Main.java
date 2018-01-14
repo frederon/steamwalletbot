@@ -94,13 +94,13 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Steam Wallet Reedemer Bot, Created by Frederic Ronaldi \n" +
+        System.out.println("Steam Wallet Activator Bot, Created by Frederic Ronaldi \n" +
                 "===============================================================================");
         if (console == null) {
             System.out.println("Couldn't get Console instance");
             System.exit(0);
         }
-        startReedem();
+        startRedeem();
     }
 
     private static boolean checkLogin(WebDriver driver) throws Exception {
@@ -121,7 +121,7 @@ public class Main {
         }
     }
 
-    private static void startReedem() throws Exception{
+    private static void startRedeem() throws Exception{
         System.setProperty("webdriver.chrome.driver", "D:\\Java\\selenium\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         Actions builder = new Actions(driver);
@@ -159,13 +159,13 @@ public class Main {
         while(true) {
             if(loggedIn) {
                 ArrayList<Wallet> wallets = getWallet();
-                System.out.println("Steam Wallet reedem from id :");
+                System.out.println("Steam Wallet Redeem from id :");
                 int startid = findWalletIndex(s.nextLine(), wallets);
-                System.out.println("Steam Wallet reedem end to id : (Max.25/hour)");
+                System.out.println("Steam Wallet Redeem end to id : (Max.25/hour)");
                 int endid = findWalletIndex(s.nextLine(), wallets);
 
                 if(startid < 0 || endid < 0 || (endid-startid+1) > 25) {
-                    System.out.println("Wrong steam wallet id or you exceeded maximal 25 steam wallet reedem/hour.");
+                    System.out.println("Wrong steam wallet id or you exceeded maximal 25 steam wallet Redeem/hour.");
                     System.out.println("Exiting bot in 10 seconds");
                     wait(10);
                     System.exit(0);
@@ -180,15 +180,15 @@ public class Main {
                     submit = driver.findElement(By.id("validate_btn"));
                     code = (String) c.getData(DataFlavor.stringFlavor);
                     seriesOfActions = builder.moveToElement(swc).click().sendKeys(swc, code).click(submit);
-                    System.out.println("Reedeming code index number : " + startid);
+                    System.out.println("Redeeming code index number : " + startid);
                     seriesOfActions.perform();
                     suc = checkStatus(driverWait);
                     if(suc) {
-                        System.out.println("Successful Reedemed Code with index number : " + startid + " at " + dateFormat.format(Calendar.getInstance().getTime()));
+                        System.out.println("Successful Redeemed Code with index number : " + startid + " at " + dateFormat.format(Calendar.getInstance().getTime()));
                         String success = wallets.get(startid).getId();
                         successWallet.add(success);
                     } else {
-                        System.out.println("Failed Reedemed Code with index number : " + startid + " at " + dateFormat.format(Calendar.getInstance().getTime()));
+                        System.out.println("Failed Redeemed Code with index number : " + startid + " at " + dateFormat.format(Calendar.getInstance().getTime()));
                         String fail = wallets.get(startid).getId();
                         failedWallet.add(fail);
                     }
@@ -197,7 +197,7 @@ public class Main {
                     driver.get("https://store.steampowered.com/account/redeemwalletcode");
                     startid++;
                     if(startid > endid) {
-                        System.out.println("Finished reedemed " + successWallet.size() + " steam wallet code(s). (" + dateFormat.format(Calendar.getInstance().getTime()) + ")");
+                        System.out.println("Finished Redeemed " + successWallet.size() + " steam wallet code(s). (" + dateFormat.format(Calendar.getInstance().getTime()) + ")");
                         System.out.println("Failed steam wallet : " + printFailedWallet());
                     }
                 }
