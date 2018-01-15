@@ -1,8 +1,8 @@
 package com.frederon;
 
-public class Wallet {
-    public String id;
-    public String code;
+class Wallet {
+    private String id;
+    private String code;
 
     public Wallet(String id, String code) {
         this.id = id;
