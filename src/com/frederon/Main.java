@@ -36,6 +36,7 @@ class Main {
     private static WebDriverWait driverWait;
     private static Actions builder, seriesOfActions;
     private static Scanner s = new Scanner(System.in);
+    private static Logger logger = new Logger();
     private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
 
@@ -115,7 +116,9 @@ class Main {
             System.out.println("Couldn't get Console instance");
             System.exit(0);
         }
-        System.setProperty("webdriver.chrome.driver", "D:\\Java\\selenium\\chromedriver.exe");
+        logger.setupLogger();
+        //System.setProperty("webdriver.chrome.driver", "D:\\Java\\selenium\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\chromedriver.exe");
         driver = new ChromeDriver();
         builder = new Actions(driver);
         driverWait  = new WebDriverWait(driver,30);
@@ -193,6 +196,7 @@ class Main {
                     }*/
                 } else if (redeemAmount == 0){
                     System.out.println("Finished redeemed all requested steam wallet codes!");
+                    logger.closeLogger();
                     s.nextLine();
                 } else {
                     System.out.println("An error has occurred.");
