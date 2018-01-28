@@ -1,14 +1,11 @@
 package com.frederon;
 
-import java.io.BufferedReader;
-import java.io.Console;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.awt.datatransfer.*;
-import java.awt.Toolkit;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -46,7 +43,11 @@ class Main {
         for(String s: failedWallet) {
             joiner.add(s);
         }
-        return joiner.toString();
+        if(failedWallet.size() == 0) {
+            return "none";
+        } else {
+            return joiner.toString();
+        }
     }
 
     /* This returns wallet index based on Wallet Id that user inputted */
@@ -103,10 +104,14 @@ class Main {
     /* Get wallet file from user and store it into the wallets array and returns it */
     private static ArrayList<Wallet> getWallet() throws IOException {
         System.out.println("Please enter your steam wallet code (.txt) location: ");
-        Scanner location = new Scanner(System.in);
-        String locString = location.nextLine();
-        String code = loadFromFile(locString);
-        System.out.println("Steam Wallet Location : " + locString);
+        FileDialog dialog = new FileDialog((Frame)null, "Please select your steam wallet codes (.txt) location:");
+        dialog.setMode(FileDialog.LOAD);
+        dialog.setVisible(true);
+        String file = dialog.getDirectory() + dialog.getFile();
+        /*Scanner location = new Scanner(System.in);
+        String locString = location.nextLine();*/
+        String code = loadFromFile(file);
+        System.out.println("Steam Wallet Location : " + file);
 
         String[] array = code.split("\\s");
         ArrayList<String> wallet = new ArrayList<>(Arrays.asList(array));
@@ -119,13 +124,13 @@ class Main {
 
     /* The main process */
     public static void main(String[] args) throws Exception {
+        logger.setupLogger();
         System.out.println("Steam Wallet Activator Bot, Created by Frederic Ronaldi \n" +
                 "===============================================================================");
         if (console == null && !DEBUG) {
             System.out.println("Couldn't get Console instance");
             System.exit(0);
         }
-        logger.setupLogger();
         System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\chromedriver.exe");
         driver = new ChromeDriver();
         builder = new Actions(driver);
