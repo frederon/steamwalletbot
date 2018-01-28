@@ -23,7 +23,7 @@ class Main {
     private static final int MAXREDEEM = 25; //Maximal Redeem amount in timer
     static final boolean DEBUG = false; //Set debug mode, so you can run the bot in debug mode.
 
-    //Define variables to be used in the bot
+    //Define variables that are used in the bot
     private static Console console = System.console();
     private static ArrayList<Wallet> wallets = new ArrayList<>();
     private static ArrayList<String> failedWallet = new ArrayList<>();
@@ -40,6 +40,7 @@ class Main {
     private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
 
+    /* This returns all failed wallet codes into one string */
     private static String printFailedWallet() {
         StringJoiner joiner = new StringJoiner(", ");
         for(String s: failedWallet) {
@@ -48,6 +49,7 @@ class Main {
         return joiner.toString();
     }
 
+    /* This returns wallet index based on Wallet Id that user inputted */
     private static int findWalletIndex(String walletId, ArrayList<Wallet> wallets) {
         for(int i = 0; i < wallets.size(); i++ ) {
             if(walletId.equals(wallets.get(i).getId())) {
@@ -57,6 +59,7 @@ class Main {
         return -1;
     }
 
+    /* Load file and returns the file as StringBuilder */
     private static String loadFromFile(String location) throws IOException{
         try(BufferedReader br = new BufferedReader(new FileReader(location))) {
             StringBuilder sb = new StringBuilder();
@@ -73,6 +76,7 @@ class Main {
         }
     }
 
+    /* Wait for second(s) */
     private static void wait(int second) {
         try
         {
@@ -84,6 +88,7 @@ class Main {
         }
     }
 
+    /* Set wallet that need to be redeemed into the clipboard */
     private static void setWallet(int id, ArrayList<Wallet> wallets) {
         if(id < 0) {
             System.out.println("Invalid input (Wrong id).");
@@ -95,10 +100,13 @@ class Main {
         System.out.println("CODE NUMBER " + (wallets.get(id).getId()));
     }
 
+    /* Get wallet file from user and store it into the wallets array and returns it */
     private static ArrayList<Wallet> getWallet() throws IOException {
         System.out.println("Please enter your steam wallet code (.txt) location: ");
         Scanner location = new Scanner(System.in);
-        String code = loadFromFile(location.nextLine());
+        String locString = location.nextLine();
+        String code = loadFromFile(locString);
+        System.out.println("Steam Wallet Location : " + locString);
 
         String[] array = code.split("\\s");
         ArrayList<String> wallet = new ArrayList<>(Arrays.asList(array));
@@ -109,6 +117,7 @@ class Main {
         return wallets;
     }
 
+    /* The main process */
     public static void main(String[] args) throws Exception {
         System.out.println("Steam Wallet Activator Bot, Created by Frederic Ronaldi \n" +
                 "===============================================================================");
@@ -117,7 +126,6 @@ class Main {
             System.exit(0);
         }
         logger.setupLogger();
-        //System.setProperty("webdriver.chrome.driver", "D:\\Java\\selenium\\chromedriver.exe");
         System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\chromedriver.exe");
         driver = new ChromeDriver();
         builder = new Actions(driver);
@@ -125,6 +133,8 @@ class Main {
         startRedeem();
     }
 
+    /* Check if user logged in , if not,
+    user can choose to login manually in the browser by typing "login" */
     private static boolean checkLogin(WebDriver driver) {
         if(driver.findElements(By.id("wallet_code")).size() != 0){
             System.out.println("Logged in");
@@ -135,6 +145,7 @@ class Main {
         }
     }
 
+    /* Check if the wallet successfully redeemed or not */
     private static boolean checkStatus(WebDriverWait driverWait) throws TimeoutException {
         try {
             return driverWait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("redeem_wallet_success_description"), "You have added " + WALLETVALUE +  " to your Steam Wallet."));
@@ -143,6 +154,7 @@ class Main {
         }
     }
 
+    /* Check for error in wallet ids? (the parameters are in array index) */
     private static void checkError(int startId, int endId) {
         if(startId < 0 || endId < 0) {
             System.out.println("Wrong steam wallet id. Please check again.");
@@ -152,6 +164,7 @@ class Main {
         }
     }
 
+    /* Activate code */
     private static void activeCode(int startId, int endId) throws Exception{
         int amount = 0;
         while(startId <= endId) {
@@ -176,7 +189,8 @@ class Main {
             seriesOfActions.perform();*/
             driver.get("https://store.steampowered.com/account/redeemwalletcode");
             amount++;
-            startId++;
+            startId++; // Should redeem next code
+            /* If there are still codes to redeem, continue, loop */
             if (startId > endId) {
                 //Calendar lastRedeem = Calendar.getInstance();
                 System.out.println("Finished redeemed " + successWallet.size() + " steam wallet code(s). (" + dateFormat.format(Calendar.getInstance().getTime()) + ")");
@@ -220,15 +234,17 @@ class Main {
         activeCode(startId, endId);
     }
 
+    /* Start redeem wallet for the first runtime */
     private static void startRedeem() throws Exception{
         driver.get("https://store.steampowered.com/login?redir=account%2Fredeemwalletcode");
 
         System.out.println("===============================================================================");
         WebElement username= driver.findElement(By.id("input_username"));
         System.out.println("Please enter your steam username :");
-
-        seriesOfActions = builder.moveToElement(username).click().sendKeys(username, s.nextLine());
+        String uname = s.nextLine();
+        seriesOfActions = builder.moveToElement(username).click().sendKeys(username, uname);
         seriesOfActions.perform();
+        System.out.println("Steam username : " + uname);
         WebElement pass = driver.findElement(By.id("input_password"));
         Actions seriesOfAction;
         if(!DEBUG) {
